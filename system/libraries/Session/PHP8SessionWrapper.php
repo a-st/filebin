@@ -56,6 +56,11 @@ class CI_SessionWrapper implements SessionHandlerInterface, SessionUpdateTimesta
 		$this->driver = $driver;
 	}
 
+	public function create_sid(): string
+	{
+		return session_create_id();
+	}
+
 	public function open(string $save_path, string $name): bool
 	{
 		return $this->driver->open($save_path, $name);
