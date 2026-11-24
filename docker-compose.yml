@@ -1,0 +1,36 @@
+networks:
+  filebin:
+
+services:
+  database:
+    image: postgres:18-alpine
+    environment:
+      - POSTGRES_PASSWORD=filebin
+      - POSTGRES_USER=filebin
+      - POSTGRES_DB=filebin
+    volumes:
+      - ./filebin_db:/var/lib/postgresql
+    restart: always
+    networks:
+      - filebin
+
+  filebin:
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    environment:
+      - BASE_URL=<url with trailing slash, e.g. https://paste.example.com/>
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_NAME=filebin
+      - DB_USER=filebin
+      - DB_PASS=filebin
+      - ENCRYPTION_KEY=<set a 32 character long sequence, e.g. with 'openssl rand -hex 16' => 039319280444ba5db924ecceca3a93f8>
+    volumes:
+      - ./data-local:/var/www/data/local
+      - ./data-uploads:/var/www/data/uploads
+    restart: always
+    networks:
+      - filebin
+    command: sh -c 'sh /wait-for.sh $$DB_HOST:$$DB_PORT -- php /configure.php && exec s6-svscan /etc/s6/'
