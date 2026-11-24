@@ -5,7 +5,7 @@ RUN mkdir -p /app
 
 WORKDIR /app
 
-COPY . /app/fb_src && \
+COPY . /app/fb_src
 RUN rm -rf \
         /app/fb_src/.editorconfig \
         /app/fb_src/.git \
